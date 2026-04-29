@@ -27,14 +27,26 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Observe login result
-        viewModel.userOpResult.observe(this) { result ->
-            result ?: return@observe
-            if (result.isSuccess) {
+        // Observe current user and save to SharedPreferences
+        viewModel.currentUser.observe(this) { user ->
+            user?.let {
+                // After successful login: save user's ID and first name to SharedPreferences
+                val prefs = getSharedPreferences("khulisa_prefs", MODE_PRIVATE)
+                prefs.edit()
+                    .putInt("user_id", user.id)
+                    .putString("user_first_name", user.firstName)
+                    .apply()
+
                 Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
-            } else {
+            }
+        }
+
+        // Observe login result
+        viewModel.userOpResult.observe(this) { result ->
+            result ?: return@observe
+            if (result.isFailure) {
                 Toast.makeText(this, result.exceptionOrNull()?.message ?: "Login failed", Toast.LENGTH_SHORT).show()
             }
             viewModel.clearResult()

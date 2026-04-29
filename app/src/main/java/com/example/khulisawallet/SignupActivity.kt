@@ -31,6 +31,16 @@ class SignUpActivity : AppCompatActivity() {
         viewModel.userOpResult.observe(this) { result ->
             result ?: return@observe
             if (result.isSuccess) {
+                // After successful registration: save user's ID and first name to SharedPreferences
+                val userId = (result.getOrNull() as? Long)?.toInt() ?: 0
+                val firstName = binding.etFirstName.text.toString().trim()
+                
+                val prefs = getSharedPreferences("khulisa_prefs", MODE_PRIVATE)
+                prefs.edit()
+                    .putInt("user_id", userId)
+                    .putString("user_first_name", firstName)
+                    .apply()
+
                 Toast.makeText(this, "Account created! Please login.", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
