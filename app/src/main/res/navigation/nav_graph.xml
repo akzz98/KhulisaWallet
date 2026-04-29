@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.khulisawallet.HomeFragment"
+        android:label="Home" />
+    <fragment
+        android:id="@+id/navigation_history"
+        android:name="com.example.khulisawallet.HistoryFragment"
+        android:label="History" />
+    <fragment
+        android:id="@+id/navigation_goals"
+        android:name="com.example.khulisawallet.GoalsFragment"
+        android:label="Goals" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.khulisawallet.ProfileFragment"
+        android:label="Profile" />
+</navigation>
