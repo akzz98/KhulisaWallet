@@ -57,6 +57,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${lifecycleVersion}")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:${lifecycleVersion}")
 
+    //Add navigation and fragment dependancies 
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.8.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.9.8.7")
+
 
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
