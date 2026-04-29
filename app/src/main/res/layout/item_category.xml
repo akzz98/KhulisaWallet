@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="4dp">
+
+    <!-- Color dot -->
+    <View
+        android:id="@+id/view_cat_color"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:background="@drawable/circle_indicator"
+        android:layout_marginEnd="8dp"/>
+
+    <!-- Category Name -->
+    <TextView
+        android:id="@+id/tv_cat_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="13sp"
+        android:textColor="#333333"/>
+
+    <!-- Total Amount -->
+    <TextView
+        android:id="@+id/tv_cat_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A1A"/>
+
+</LinearLayout>

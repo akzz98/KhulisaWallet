@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    android:layout_marginBottom="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Category Color Dot -->
+        <View
+            android:id="@+id/view_cat_color"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:background="@drawable/circle_indicator"
+            android:layout_marginEnd="12dp"/>
+
+        <!-- Category Name -->
+        <TextView
+            android:id="@+id/tv_cat_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"/>
+
+        <!-- Category Total -->
+        <TextView
+            android:id="@+id/tv_cat_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2ECC71"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
