@@ -24,6 +24,10 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.getUserByIdLiveData(userId)
     }
 
+    suspend fun getUserByIdOnce(id: Int): User? {
+        return userDao.getUserById(id)
+    }
+
     suspend fun getUserByEmail(email: String): User? {
         return userDao.getUserByEmail(email)
     }

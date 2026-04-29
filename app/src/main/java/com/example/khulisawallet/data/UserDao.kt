@@ -17,6 +17,9 @@ interface UserDao {
     suspend fun getUserById(userId: Int): User?
 
     @Query("SELECT * FROM users WHERE id = :userId")
+    suspend fun getUserByIdOnce(userId: Int): User?
+
+    @Query("SELECT * FROM users WHERE id = :userId")
     fun getUserByIdLiveData(userId: Int): LiveData<User?>
 
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")

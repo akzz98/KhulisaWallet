@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.example.khulisawallet.data.User
 import com.example.khulisawallet.data.UserRepository
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
@@ -21,23 +22,31 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     /**
      * Get user by ID
      */
-    fun getUserById(userId: Int): LiveData<User?> {
-        return repository.getUserByIdLiveData(userId)
+    fun getUserById(id: Int): LiveData<User?> {
+        return repository.getUserByIdLiveData(id)
     }
 
     /**
      * Change password
      */
-    fun changePassword(userId: Int, current: String, newPass: String) {
+    fun changePassword(userId: Int, currentPassword: String, newPassword: String) {
         viewModelScope.launch {
+            val currentHash = hashPassword(currentPassword)
             val user = repository.getUserById(userId)
-            if (user != null && user.passwordHash == current) {
-                val result = repository.updatePassword(userId, newPass)
+            if (user != null && user.passwordHash == currentHash) {
+                val newHash = hashPassword(newPassword)
+                val result = repository.updatePassword(userId, newHash)
                 _userOpResult.postValue(result as Result<Any>)
             } else {
                 _userOpResult.postValue(Result.failure(Exception("Incorrect password")))
             }
         }
+    }
+
+    private fun hashPassword(password: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(password.toByteArray())
+        return hashBytes.joinToString("") { "%02x".format(it) }
     }
 
     /**
