@@ -4,10 +4,9 @@ import android.content.Context
 import androidx.room.*
 
 @Database(
-    // Added Expense
-    entities = [User::class, Category::class, Expense::class],
-    // Bumped to 3
-    version = 3,
+    // Added Goal
+    entities = [User::class, Category::class, Expense::class, Goal::class],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -15,8 +14,8 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
     abstract fun categoryDao(): CategoryDao
-    // Added
     abstract fun expenseDao(): ExpenseDao
+    abstract fun goalDao(): GoalDao
 
     companion object {
         @Volatile
