@@ -36,6 +36,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- add provider for file paths -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.khulisawallet.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- For saving to internal storage (not required for API 29+, but good for safety) -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
 </manifest>
