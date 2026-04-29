@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KhulisaWallet">
         <activity
+            android:name=".Signup"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
