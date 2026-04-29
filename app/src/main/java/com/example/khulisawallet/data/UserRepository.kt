@@ -20,6 +20,10 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.getUserById(userId)
     }
 
+    fun getUserByIdLiveData(userId: Int): LiveData<User?> {
+        return userDao.getUserByIdLiveData(userId)
+    }
+
     suspend fun getUserByEmail(email: String): User? {
         return userDao.getUserByEmail(email)
     }
@@ -56,6 +60,15 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun updateProfileImage(userId: Int, path: String): Result<Unit> {
         return try {
             userDao.updateProfileImage(userId, path)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updatePassword(userId: Int, newPassword: String): Result<Unit> {
+        return try {
+            userDao.updatePassword(userId, newPassword)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

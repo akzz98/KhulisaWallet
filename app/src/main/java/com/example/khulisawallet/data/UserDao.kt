@@ -16,6 +16,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE id = :userId")
     suspend fun getUserById(userId: Int): User?
 
+    @Query("SELECT * FROM users WHERE id = :userId")
+    fun getUserByIdLiveData(userId: Int): LiveData<User?>
+
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     suspend fun getUserByEmail(email: String): User?
 
@@ -32,6 +35,9 @@ interface UserDao {
 
     @Query("UPDATE users SET lastLogin = :timestamp WHERE id = :userId")
     suspend fun updateLastLogin(userId: Int, timestamp: Long = System.currentTimeMillis())
+
+    @Query("UPDATE users SET passwordHash = :newPassword WHERE id = :userId")
+    suspend fun updatePassword(userId: Int, newPassword: String)
 
     @Query("UPDATE users SET profileImagePath = :path WHERE id = :userId")
     suspend fun updateProfileImage(userId: Int, path: String)

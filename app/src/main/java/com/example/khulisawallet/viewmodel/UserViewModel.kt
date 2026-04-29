@@ -19,6 +19,28 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     val currentUser: LiveData<User?> = _currentUser
 
     /**
+     * Get user by ID
+     */
+    fun getUserById(userId: Int): LiveData<User?> {
+        return repository.getUserByIdLiveData(userId)
+    }
+
+    /**
+     * Change password
+     */
+    fun changePassword(userId: Int, current: String, newPass: String) {
+        viewModelScope.launch {
+            val user = repository.getUserById(userId)
+            if (user != null && user.passwordHash == current) {
+                val result = repository.updatePassword(userId, newPass)
+                _userOpResult.postValue(result as Result<Any>)
+            } else {
+                _userOpResult.postValue(Result.failure(Exception("Incorrect password")))
+            }
+        }
+    }
+
+    /**
      * Register a new user
      */
     fun registerUser(firstName: String, lastName: String, email: String, passwordHash: String) {
