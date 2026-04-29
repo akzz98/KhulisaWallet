@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.*
 
 @Database(
-    entities = [User::class, Category::class],
-    version = 2,
+    // Added Expense
+    entities = [User::class, Category::class, Expense::class],
+    // Bumped to 3
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -13,6 +15,8 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
     abstract fun categoryDao(): CategoryDao
+    // Added
+    abstract fun expenseDao(): ExpenseDao
 
     companion object {
         @Volatile
