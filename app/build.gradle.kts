@@ -33,7 +33,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    //Add view binding to project
+    buildFeatures {
+        viewBinding = true
+    }
 }
+
 
 dependencies {
     implementation(libs.androidx.activity.ktx)
