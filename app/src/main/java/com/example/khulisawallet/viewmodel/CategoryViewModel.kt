@@ -8,6 +8,13 @@ import kotlinx.coroutines.launch
 
 class CategoryViewModel(private val repository: CategoryRepository) : ViewModel() {
 
+    private val _userId = MutableLiveData<Int>()
+
+    fun setUser(userId: Int) {
+        _userId.value = userId
+    }
+
+    val allCategories: LiveData<List<Category>> = repository.allActiveCategories
     val allActiveCategories: LiveData<List<Category>> = repository.allActiveCategories
     val defaultCategories: LiveData<List<Category>> = repository.defaultCategories
     val userCategories: LiveData<List<Category>> = repository.userCategories
