@@ -20,6 +20,28 @@ interface GoalDao {
     @Query("SELECT * FROM goals WHERE id = :id")
     suspend fun getGoalById(id: Int): Goal?
 
+    // Goals where currentAmount is below minGoal (under-saving alert)
+    @Query("""
+        SELECT * FROM goals 
+        WHERE userId = :userId 
+        AND status = 'ACTIVE' 
+        AND minGoal IS NOT NULL 
+        AND currentAmount < minGoal
+        ORDER BY createdAt DESC
+    """)
+    fun getGoalsBelowMinimum(userId: Int): LiveData<List<Goal>>
+
+    // Goals where currentAmount has exceeded maxGoal (overspending alert)
+    @Query("""
+        SELECT * FROM goals 
+        WHERE userId = :userId 
+        AND status = 'ACTIVE' 
+        AND maxGoal IS NOT NULL 
+        AND currentAmount > maxGoal
+        ORDER BY createdAt DESC
+    """)
+    fun getGoalsExceedingMaximum(userId: Int): LiveData<List<Goal>>
+
     // Goals approaching deadline (within next 7 days)
     @Query("""
         SELECT * FROM goals 
@@ -71,6 +93,18 @@ interface GoalDao {
     suspend fun updateGoalStatus(
         goalId: Int,
         status: String,
+        timestamp: Long = System.currentTimeMillis()
+    )
+
+    @Query("""
+        UPDATE goals 
+        SET minGoal = :minGoal, maxGoal = :maxGoal, updatedAt = :timestamp 
+        WHERE id = :goalId
+    """)
+    suspend fun updateGoalThresholds(
+        goalId: Int,
+        minGoal: Double?,
+        maxGoal: Double?,
         timestamp: Long = System.currentTimeMillis()
     )
 

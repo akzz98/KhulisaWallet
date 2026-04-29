@@ -34,8 +34,18 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
         repository.getTotalTargetAmount(it)
     }
 
-    val totalSavedAmount: LiveData<List<Goal>> = _userId.switchMap {
-        repository.getAllGoalsByUser(it)
+    val totalSavedAmount: LiveData<Double?> = _userId.switchMap {
+        repository.getTotalSavedAmount(it)
+    }
+
+    // ✅ Alert: goals where savings are below minimum
+    val goalsBelowMinimum: LiveData<List<Goal>> = _userId.switchMap {
+        repository.getGoalsBelowMinimum(it)
+    }
+
+    // ✅ Alert: goals where spending has exceeded maximum
+    val goalsExceedingMaximum: LiveData<List<Goal>> = _userId.switchMap {
+        repository.getGoalsExceedingMaximum(it)
     }
 
     private val _goalOpResult = MutableLiveData<Result<Any>?>()
@@ -49,6 +59,8 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
         name: String,
         targetAmount: Double,
         description: String? = null,
+        minGoal: Double? = null,
+        maxGoal: Double? = null,
         deadline: Long? = null,
         colorHex: String = "#2ECC71",
         iconName: String = "ic_goal"
@@ -60,6 +72,8 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
                 name = name,
                 description = description,
                 targetAmount = targetAmount,
+                minGoal = minGoal,
+                maxGoal = maxGoal,
                 deadline = deadline,
                 colorHex = colorHex,
                 iconName = iconName
@@ -72,6 +86,13 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
     fun contributeToGoal(goalId: Int, amount: Double) {
         viewModelScope.launch {
             val result = repository.contributeToGoal(goalId, amount)
+            _goalOpResult.postValue(result as Result<Any>)
+        }
+    }
+
+    fun updateGoalThresholds(goalId: Int, minGoal: Double?, maxGoal: Double?) {
+        viewModelScope.launch {
+            val result = repository.updateGoalThresholds(goalId, minGoal, maxGoal)
             _goalOpResult.postValue(result as Result<Any>)
         }
     }
@@ -97,10 +118,20 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
         }
     }
 
-    // Helper: calculate progress percentage
+    // Helper: progress percentage
     fun getProgressPercent(goal: Goal): Int {
         if (goal.targetAmount == 0.0) return 0
         return ((goal.currentAmount / goal.targetAmount) * 100).toInt().coerceIn(0, 100)
+    }
+
+    // Helper: check if below minimum threshold
+    fun isBelowMinGoal(goal: Goal): Boolean {
+        return goal.minGoal != null && goal.currentAmount < goal.minGoal
+    }
+
+    // Helper: check if exceeding maximum threshold
+    fun isExceedingMaxGoal(goal: Goal): Boolean {
+        return goal.maxGoal != null && goal.currentAmount > goal.maxGoal
     }
 
     fun clearResult() {

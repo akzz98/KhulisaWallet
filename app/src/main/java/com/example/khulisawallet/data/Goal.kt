@@ -13,20 +13,24 @@ import androidx.room.PrimaryKey
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE   // Delete goals if user is deleted
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
 data class Goal(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val userId: Int,                            // Links to User.id
+    val userId: Int,
     val name: String,
     val description: String? = null,
     val targetAmount: Double,
     val currentAmount: Double = 0.0,
-    val deadline: Long? = null,                 // Optional target date
+    // Minimum threshold (e.g. must save at least R500)
+    val minGoal: Double? = null,
+    // Maximum threshold (e.g. don't spend more than R2000)
+    val maxGoal: Double? = null,
+    val deadline: Long? = null,
     val status: GoalStatus = GoalStatus.ACTIVE,
-    val colorHex: String = "#2ECC71",           // For UI display
+    val colorHex: String = "#2ECC71",
     val iconName: String = "ic_goal",
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long? = null

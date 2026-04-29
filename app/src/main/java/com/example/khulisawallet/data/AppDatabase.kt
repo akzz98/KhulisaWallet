@@ -6,7 +6,7 @@ import androidx.room.*
 @Database(
     // Added Goal
     entities = [User::class, Category::class, Expense::class, Goal::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
