@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    //enable KSP
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -42,6 +44,20 @@ android {
 
 
 dependencies {
+    val roomVersion = "2.8.4"
+    val lifecycleVersion = "2.10.0"
+
+    implementation("androidx.room:room-runtime:${roomVersion}")
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See Add the KSP plugin to your project
+    ksp("androidx.room:room-compiler:$roomVersion")
+    // Kotlin Extensions and Coroutines support for Room
+    implementation("androidx.room:room-ktx:${roomVersion}")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${lifecycleVersion}")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:${lifecycleVersion}")
+
+
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
