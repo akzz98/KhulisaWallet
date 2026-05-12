@@ -100,14 +100,6 @@ For each goal:
   - `spent > maxAmount` → “Exceeded”
   - otherwise → “On Track”
 
-## Submission Checklist (Quick)
-- [ ] Splash → Login/Sign Up works
-- [ ] Room DB working (User/Category/Expense/Goal)
-- [ ] Goals progress + min/max alerts visible
-- [ ] Profile shows user info + logout works
-- [ ] Screenshots / evidence for POE (if required)
-- [ ] GitHub Actions workflow added (if required by rubric)
-
 ## Author
 - Student Number: **ST10263456**
 - Module: **PROG7313**
