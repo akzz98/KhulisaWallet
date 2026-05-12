@@ -35,6 +35,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE isDefault = 0 AND isActive = 1")
     fun getUserCategories(): LiveData<List<Category>>
 
+    @Query("SELECT COUNT(*) FROM categories")
+    suspend fun getCategoryCount(): Int
+
     // --- UPDATE ---
     @Update
     suspend fun updateCategory(category: Category)

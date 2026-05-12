@@ -31,8 +31,10 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
     }
 
     suspend fun preloadDefaults() {
+        val count = categoryDao.getCategoryCount()
+        if (count > 0) return
+
         val defaults = listOf(
-            // EXPENSE categories
             Category(name = "Food & Groceries",  iconName = "ic_food",       colorHex = "#FF6B6B", type = CategoryType.EXPENSE, isDefault = true),
             Category(name = "Transport",          iconName = "ic_transport",  colorHex = "#4ECDC4", type = CategoryType.EXPENSE, isDefault = true),
             Category(name = "Housing",            iconName = "ic_home",       colorHex = "#45B7D1", type = CategoryType.EXPENSE, isDefault = true),
@@ -41,7 +43,6 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
             Category(name = "Education",          iconName = "ic_education",  colorHex = "#DDA0DD", type = CategoryType.EXPENSE, isDefault = true),
             Category(name = "Savings",            iconName = "ic_savings",    colorHex = "#98D8C8", type = CategoryType.EXPENSE, isDefault = true),
             Category(name = "Other",              iconName = "ic_other",      colorHex = "#B0B0B0", type = CategoryType.EXPENSE, isDefault = true),
-            // INCOME categories
             Category(name = "Salary",             iconName = "ic_salary",     colorHex = "#2ECC71", type = CategoryType.INCOME, isDefault = true),
             Category(name = "Freelance",          iconName = "ic_freelance",  colorHex = "#F39C12", type = CategoryType.INCOME, isDefault = true),
             Category(name = "Investment",         iconName = "ic_invest",     colorHex = "#9B59B6", type = CategoryType.INCOME, isDefault = true),
