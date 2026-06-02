@@ -44,6 +44,7 @@ class AddExpenseActivity : AppCompatActivity() {
     // --- State ---
     private var selectedDate: Long = System.currentTimeMillis()
     private var currentPhotoPath: String? = null
+    private var currentPhotoUri: Uri? = null
     private var categories: List<Category> = emptyList()
     private val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
@@ -51,9 +52,13 @@ class AddExpenseActivity : AppCompatActivity() {
     private val takePhotoLauncher = registerForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success && currentPhotoPath != null) {
-            ivReceipt.visibility = View.VISIBLE
-            ivReceipt.setImageURI(Uri.parse(currentPhotoPath))
+        if (success) {
+            currentPhotoUri?.let { uri ->
+                ivReceipt.visibility = View.VISIBLE
+                ivReceipt.setImageURI(uri)
+            }
+        } else {
+            Toast.makeText(this, "Camera cancelled or failed", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -172,19 +177,45 @@ class AddExpenseActivity : AppCompatActivity() {
 
     private fun setupCameraButtons() {
         btnCamera.setOnClickListener {
-            val photoFile = try {
-                ImageUtils.createImageFile(this)
-            } catch (e: Exception) {
-                Toast.makeText(this, "Could not create image file", Toast.LENGTH_SHORT).show()
+            if (checkSelfPermission(android.Manifest.permission.CAMERA)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(arrayOf(android.Manifest.permission.CAMERA), 101)
                 return@setOnClickListener
             }
-            currentPhotoPath = photoFile.absolutePath
-            val photoUri = ImageUtils.getFileUri(this, photoFile)
-            takePhotoLauncher.launch(photoUri)
+            launchCamera()
         }
 
         btnGallery.setOnClickListener {
             pickImageLauncher.launch("image/*")
+        }
+    }
+
+    private fun launchCamera() {
+        val photoFile = try {
+            ImageUtils.createImageFile(this)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Could not create image file: ${e.message}", Toast.LENGTH_SHORT).show()
+            return
+        }
+        currentPhotoPath = photoFile.absolutePath
+        currentPhotoUri = ImageUtils.getFileUri(this, photoFile)
+        takePhotoLauncher.launch(currentPhotoUri!!)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 &&
+            grantResults.isNotEmpty() &&
+            grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            launchCamera()
+        } else {
+            Toast.makeText(this, "Camera permission is required to take a photo", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -11,11 +11,15 @@ import java.util.*
 object ImageUtils {
 
     /**
-     * Creates a temporary file to store the high-resolution photo
+     * Creates a temporary file to store the high-resolution photo.
+     * Falls back to internal files dir if external is unavailable.
      */
     fun createImageFile(context: Context): File {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        // Use internal files dir as fallback if external is null
+        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            ?: context.filesDir
+        if (!storageDir.exists()) storageDir.mkdirs()
         return File.createTempFile(
             "RECEIPT_${timeStamp}_",
             ".jpg",
@@ -24,7 +28,7 @@ object ImageUtils {
     }
 
     /**
-     * Gets the URI for the file to be passed to the Camera Intent
+     * Gets the content:// URI for the file to be passed to the Camera Intent.
      */
     fun getFileUri(context: Context, file: File): Uri {
         return FileProvider.getUriForFile(
@@ -35,7 +39,7 @@ object ImageUtils {
     }
 
     /**
-     * Optional: Clean up temp files if an expense is deleted
+     * Clean up temp files if an expense is deleted.
      */
     fun deleteImageFile(path: String): Boolean {
         return try {
