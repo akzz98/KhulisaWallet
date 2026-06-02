@@ -2,7 +2,10 @@ package com.example.khulisawallet.data
 
 import androidx.lifecycle.LiveData
 
-class ExpenseRepository(private val expenseDao: ExpenseDao) {
+class ExpenseRepository(
+    private val expenseDao: ExpenseDao,
+    private val goalDao: GoalDao
+) {
 
     fun getAllExpensesByUser(userId: Int): LiveData<List<Expense>> =
         expenseDao.getAllExpensesByUser(userId)
@@ -44,15 +47,40 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
     ): LiveData<Double?> =
         expenseDao.getTotalByCategoryAndDateRange(userId, categoryId, startDate, endDate)
 
+    fun getSumForCategory(userId: Int, categoryId: Int): LiveData<Double?> =
+        expenseDao.getSumForCategory(userId, categoryId)
+
+    fun getSumForCategorySince(
+        userId: Int,
+        categoryId: Int,
+        startDate: Long,
+        endDate: Long
+    ): LiveData<Double?> =
+        expenseDao.getSumForCategorySince(userId, categoryId, startDate, endDate)
+
     fun getRecurringExpenses(userId: Int): LiveData<List<Expense>> =
         expenseDao.getRecurringExpenses(userId)
 
     suspend fun insertExpense(expense: Expense): Result<Long> {
         return try {
             val id = expenseDao.insertExpense(expense)
+            if (expense.type == CategoryType.EXPENSE) {
+                syncExpenseToGoals(expense)
+            }
             Result.success(id)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private suspend fun syncExpenseToGoals(expense: Expense) {
+        val goals = goalDao.getActiveGoalsByCategory(expense.userId, expense.categoryId)
+        for (goal in goals) {
+            if (expense.date >= goal.createdAt &&
+                (goal.deadline == null || expense.date <= goal.deadline)
+            ) {
+                goalDao.addSpendingToGoal(goal.id, expense.amount)
+            }
         }
     }
 

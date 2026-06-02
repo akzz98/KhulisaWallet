@@ -120,9 +120,16 @@ class AddExpenseActivity : AppCompatActivity() {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
         )[ExpenseViewModel::class.java]
         expenseViewModel.setUser(userId)
+
+        if (userId == -1) {
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_LONG).show()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
 
         categoryViewModel = ViewModelProvider(
             this,

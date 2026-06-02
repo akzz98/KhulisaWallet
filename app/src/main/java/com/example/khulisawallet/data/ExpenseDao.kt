@@ -59,6 +59,15 @@ interface ExpenseDao {
     @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND date BETWEEN :startDate AND :endDate")
     fun getTotalByCategoryAndDateRange(userId: Int, categoryId: Int, startDate: Long, endDate: Long): LiveData<Double?>
 
+    @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND type = 'EXPENSE'")
+    fun getSumForCategory(userId: Int, categoryId: Int): LiveData<Double?>
+
+    @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND type = 'EXPENSE' AND date >= :startDate AND date <= :endDate")
+    fun getSumForCategorySince(userId: Int, categoryId: Int, startDate: Long, endDate: Long): LiveData<Double?>
+
+    @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND type = 'EXPENSE' AND date >= :startDate AND date <= :endDate")
+    suspend fun getSumForCategorySinceSync(userId: Int, categoryId: Int, startDate: Long, endDate: Long): Double?
+
     @Query("SELECT * FROM expenses WHERE isRecurring = 1 AND userId = :userId")
     fun getRecurringExpenses(userId: Int): LiveData<List<Expense>>
 
