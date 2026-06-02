@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.cardview.widget.CardView
 import com.example.khulisawallet.data.AppDatabase
+import com.example.khulisawallet.data.CategoryRepository
 import com.example.khulisawallet.data.ExpenseRepository
 import com.example.khulisawallet.data.GoalRepository
 import com.example.khulisawallet.viewmodel.ExpenseViewModel
@@ -38,12 +39,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
         )[ExpenseViewModel::class.java]
 
         goalViewModel = ViewModelProvider(
             this,
-            GoalViewModelFactory(GoalRepository(db.goalDao()))
+            GoalViewModelFactory(
+                GoalRepository(db.goalDao(), db.expenseDao(), db.categoryDao()),
+                ExpenseRepository(db.expenseDao(), db.goalDao()),
+                CategoryRepository(db.categoryDao())
+            )
         )[GoalViewModel::class.java]
 
         expenseViewModel.setUser(userId)

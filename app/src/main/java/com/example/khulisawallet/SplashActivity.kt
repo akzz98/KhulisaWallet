@@ -33,9 +33,16 @@ class SplashActivity : AppCompatActivity() {
             preload.await()
 
             val sharedPref = getSharedPreferences("khulisa_prefs", Context.MODE_PRIVATE)
-            val isLoggedIn = sharedPref.contains("user_id")
+            val userId = sharedPref.getInt("user_id", -1)
+            val db = AppDatabase.getDatabase(this@SplashActivity)
+            val userExists = userId != -1 && db.userDao().getUserById(userId) != null
 
-            if (isLoggedIn) {
+            // Prefs can outlive a destructive DB migration — clear stale session
+            if (userId != -1 && !userExists) {
+                sharedPref.edit().clear().apply()
+            }
+
+            if (userExists) {
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))
             } else {
                 startActivity(Intent(this@SplashActivity, LoginActivity::class.java))

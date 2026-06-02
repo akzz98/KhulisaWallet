@@ -52,13 +52,17 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
         )[ExpenseViewModel::class.java]
         expenseViewModel.setUser(userId)
 
         goalViewModel = ViewModelProvider(
             this,
-            GoalViewModelFactory(GoalRepository(db.goalDao()))
+            GoalViewModelFactory(
+                GoalRepository(db.goalDao(), db.expenseDao(), db.categoryDao()),
+                ExpenseRepository(db.expenseDao(), db.goalDao()),
+                CategoryRepository(db.categoryDao())
+            )
         )[GoalViewModel::class.java]
         goalViewModel.setUser(userId)
 
