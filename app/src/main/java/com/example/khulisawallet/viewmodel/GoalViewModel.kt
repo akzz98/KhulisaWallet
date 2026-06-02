@@ -1,14 +1,23 @@
 package com.example.khulisawallet.viewmodel
 
 import androidx.lifecycle.*
-import com.example.khulisawallet.data.Goal
-import com.example.khulisawallet.data.GoalRepository
-import com.example.khulisawallet.data.GoalStatus
+import com.example.khulisawallet.GoalWithSpent
+import com.example.khulisawallet.data.*
 import kotlinx.coroutines.launch
 
-class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
+class GoalViewModel(
+    private val repository: GoalRepository,
+    private val expenseRepository: ExpenseRepository,
+    private val categoryRepository: CategoryRepository
+) : ViewModel() {
 
     private val _userId = MutableLiveData<Int>()
+    private val _goalsWithSpending = MediatorLiveData<List<GoalWithSpent>>()
+    val goalsWithSpending: LiveData<List<GoalWithSpent>> = _goalsWithSpending
+
+    private var goalsSource: LiveData<List<Goal>>? = null
+    private var expensesSource: LiveData<List<ExpenseWithCategory>>? = null
+    private var categoriesSource: LiveData<List<Category>>? = null
 
     val allGoals: LiveData<List<Goal>> = _userId.switchMap {
         repository.getAllGoalsByUser(it)
@@ -38,12 +47,10 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
         repository.getTotalSavedAmount(it)
     }
 
-    // ✅ Alert: goals where savings are below minimum
     val goalsBelowMinimum: LiveData<List<Goal>> = _userId.switchMap {
         repository.getGoalsBelowMinimum(it)
     }
 
-    // ✅ Alert: goals where spending has exceeded maximum
     val goalsExceedingMaximum: LiveData<List<Goal>> = _userId.switchMap {
         repository.getGoalsExceedingMaximum(it)
     }
@@ -53,10 +60,64 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
 
     fun setUser(userId: Int) {
         _userId.value = userId
+        setupGoalsWithSpending(userId)
+    }
+
+    private fun setupGoalsWithSpending(userId: Int) {
+        goalsSource?.let { _goalsWithSpending.removeSource(it) }
+        expensesSource?.let { _goalsWithSpending.removeSource(it) }
+        categoriesSource?.let { _goalsWithSpending.removeSource(it) }
+
+        var goals: List<Goal> = emptyList()
+        var expenses: List<ExpenseWithCategory> = emptyList()
+        var categories: List<Category> = emptyList()
+
+        fun recompute() {
+            val now = System.currentTimeMillis()
+            val result = goals.map { goal ->
+                val endDate = goal.deadline ?: now
+                val spent = expenses
+                    .filter { item ->
+                        item.expense.categoryId == goal.categoryId &&
+                            item.expense.type == CategoryType.EXPENSE &&
+                            item.expense.date >= goal.createdAt &&
+                            item.expense.date <= endDate
+                    }
+                    .sumOf { it.expense.amount }
+                val categoryName = categories.find { it.id == goal.categoryId }?.name ?: "Unknown"
+                GoalWithSpent(goal, categoryName, spent)
+            }
+            _goalsWithSpending.value = result
+        }
+
+        goalsSource = repository.getAllGoalsByUser(userId).also { source ->
+            _goalsWithSpending.addSource(source) {
+                goals = it
+                recompute()
+            }
+        }
+        expensesSource = expenseRepository.getAllExpensesWithCategory(userId).also { source ->
+            _goalsWithSpending.addSource(source) {
+                expenses = it
+                recompute()
+            }
+        }
+        categoriesSource = categoryRepository.allActiveCategories.also { source ->
+            _goalsWithSpending.addSource(source) {
+                categories = it
+                recompute()
+            }
+        }
+    }
+
+    fun getSpendingForCategory(categoryId: Int): LiveData<Double?> {
+        val userId = _userId.value ?: return MutableLiveData()
+        return repository.getSumForCategory(userId, categoryId)
     }
 
     fun addGoal(
         name: String,
+        categoryId: Int,
         targetAmount: Double,
         description: String? = null,
         minGoal: Double? = null,
@@ -69,6 +130,7 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
         viewModelScope.launch {
             val goal = Goal(
                 userId = userId,
+                categoryId = categoryId,
                 name = name,
                 description = description,
                 targetAmount = targetAmount,
@@ -118,18 +180,15 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
         }
     }
 
-    // Helper: progress percentage
     fun getProgressPercent(goal: Goal): Int {
         if (goal.targetAmount == 0.0) return 0
         return ((goal.currentAmount / goal.targetAmount) * 100).toInt().coerceIn(0, 100)
     }
 
-    // Helper: check if below minimum threshold
     fun isBelowMinGoal(goal: Goal): Boolean {
         return goal.minGoal != null && goal.currentAmount < goal.minGoal
     }
 
-    // Helper: check if exceeding maximum threshold
     fun isExceedingMaxGoal(goal: Goal): Boolean {
         return goal.maxGoal != null && goal.currentAmount > goal.maxGoal
     }

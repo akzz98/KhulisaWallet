@@ -44,7 +44,11 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
         goalViewModel = ViewModelProvider(
             this,
-            GoalViewModelFactory(GoalRepository(db.goalDao()))
+            GoalViewModelFactory(
+                GoalRepository(db.goalDao(), db.expenseDao(), db.categoryDao()),
+                ExpenseRepository(db.expenseDao(), db.goalDao()),
+                CategoryRepository(db.categoryDao())
+            )
         )[GoalViewModel::class.java]
         goalViewModel.setUser(userId)
 
@@ -55,9 +59,13 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
         )[ExpenseViewModel::class.java]
         expenseViewModel.setUser(userId)
+
+        categoryViewModel.allActiveCategories.observe(viewLifecycleOwner) { cats ->
+            categories = cats
+        }
     }
 
     private fun setupRecyclerView(view: View) {
@@ -75,12 +83,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
         val tvOnTrack = view.findViewById<TextView>(R.id.tv_on_track)
         val tvNeedsAttention = view.findViewById<TextView>(R.id.tv_needs_attention)
 
-        // Observe all goals
-        goalViewModel.allGoals.observe(viewLifecycleOwner) { goals ->
-            val goalsWithSpent = goals.map { goal ->
-                GoalWithSpent(goal, goal.name, 0.0)
-            }
-
+        goalViewModel.goalsWithSpending.observe(viewLifecycleOwner) { goalsWithSpent ->
             goalAdapter.submitList(goalsWithSpent)
 
             val isEmpty = goalsWithSpent.isEmpty()
@@ -113,6 +116,19 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
         val etMin = dialogView.findViewById<TextInputEditText>(R.id.et_goal_min)
         val etMax = dialogView.findViewById<TextInputEditText>(R.id.et_goal_max)
         val etTarget = dialogView.findViewById<TextInputEditText>(R.id.et_goal_target)
+        val spinnerCategory = dialogView.findViewById<Spinner>(R.id.spinner_goal_category)
+
+        if (categories.isEmpty()) {
+            Toast.makeText(requireContext(), "No categories available yet", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val categoryNames = categories.map { it.name }
+        spinnerCategory.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            categoryNames
+        ).also { it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
         AlertDialog.Builder(requireContext())
             .setTitle("Add New Goal")
@@ -122,6 +138,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
                 val min = etMin.text.toString().toDoubleOrNull()
                 val max = etMax.text.toString().toDoubleOrNull()
                 val target = etTarget.text.toString().toDoubleOrNull()
+                val selectedCategory = categories[spinnerCategory.selectedItemPosition]
 
                 if (name.isEmpty() || target == null) {
                     Toast.makeText(requireContext(), "Please fill name and target amount", Toast.LENGTH_SHORT).show()
@@ -134,6 +151,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
                 goalViewModel.addGoal(
                     name = name,
+                    categoryId = selectedCategory.id,
                     targetAmount = target,
                     minGoal = min,
                     maxGoal = max

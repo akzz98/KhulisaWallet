@@ -20,6 +20,7 @@ import androidx.room.PrimaryKey
 data class Goal(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val userId: Int,
+    val categoryId: Int,
     val name: String,
     val description: String? = null,
     val targetAmount: Double,

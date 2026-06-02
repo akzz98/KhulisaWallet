@@ -69,6 +69,16 @@ interface GoalDao {
     @Query("SELECT SUM(currentAmount) FROM goals WHERE userId = :userId AND status = 'ACTIVE'")
     fun getTotalSavedAmount(userId: Int): LiveData<Double?>
 
+    @Query("SELECT * FROM goals WHERE userId = :userId AND status = 'ACTIVE' AND categoryId = :categoryId")
+    suspend fun getActiveGoalsByCategory(userId: Int, categoryId: Int): List<Goal>
+
+    @Query("UPDATE goals SET currentAmount = currentAmount + :amount, updatedAt = :timestamp WHERE id = :goalId")
+    suspend fun addSpendingToGoal(
+        goalId: Int,
+        amount: Double,
+        timestamp: Long = System.currentTimeMillis()
+    )
+
     // --- UPDATE ---
     @Update
     suspend fun updateGoal(goal: Goal)

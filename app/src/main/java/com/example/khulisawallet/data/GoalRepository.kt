@@ -2,7 +2,11 @@ package com.example.khulisawallet.data
 
 import androidx.lifecycle.LiveData
 
-class GoalRepository(private val goalDao: GoalDao) {
+class GoalRepository(
+    private val goalDao: GoalDao,
+    private val expenseDao: ExpenseDao,
+    private val categoryDao: CategoryDao
+) {
 
     fun getAllGoalsByUser(userId: Int): LiveData<List<Goal>> =
         goalDao.getAllGoalsByUser(userId)
@@ -33,6 +37,30 @@ class GoalRepository(private val goalDao: GoalDao) {
 
     fun getTotalSavedAmount(userId: Int): LiveData<Double?> =
         goalDao.getTotalSavedAmount(userId)
+
+    fun getSumForCategory(userId: Int, categoryId: Int): LiveData<Double?> =
+        expenseDao.getSumForCategory(userId, categoryId)
+
+    fun getSumForCategorySince(
+        userId: Int,
+        categoryId: Int,
+        startDate: Long,
+        endDate: Long
+    ): LiveData<Double?> =
+        expenseDao.getSumForCategorySince(userId, categoryId, startDate, endDate)
+
+    suspend fun getSpendingForGoal(userId: Int, goal: Goal): Double {
+        val endDate = goal.deadline ?: System.currentTimeMillis()
+        return expenseDao.getSumForCategorySinceSync(
+            userId,
+            goal.categoryId,
+            goal.createdAt,
+            endDate
+        ) ?: 0.0
+    }
+
+    suspend fun getCategoryName(categoryId: Int): String =
+        categoryDao.getCategoryById(categoryId)?.name ?: "Unknown"
 
     suspend fun getGoalById(id: Int): Goal? =
         goalDao.getGoalById(id)
