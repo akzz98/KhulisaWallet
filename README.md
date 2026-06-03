@@ -3,6 +3,7 @@
 
 ## 📌 Project Overview
 Khulisa Wallet (*IsiZulu for "to grow"*) is a data-driven personal finance application built for South African users. It goes beyond simple expense tracking by introducing **proactive daily budgeting** through Safe-to-Spend logic and **habit-forming gamification** via the Khulisa Growth Streak system.
+
 <img width="374" height="486" alt="image" src="https://github.com/user-attachments/assets/e742e816-d700-4773-a56d-eb69fb77e43c" />
 
 The app is **offline-first**: all data is stored locally in Room for fast performance, then synced to **Firebase Firestore** when the user logs in or opens the app.
