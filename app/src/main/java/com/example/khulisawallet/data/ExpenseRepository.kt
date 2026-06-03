@@ -102,6 +102,9 @@ class ExpenseRepository(
                 (goal.deadline == null || expense.date <= goal.deadline)
             ) {
                 goalDao.addSpendingToGoal(goal.id, expense.amount)
+                goalDao.getGoalById(goal.id)?.let { updatedGoal ->
+                    firebaseRepository.saveGoal(updatedGoal)
+                }
             }
         }
     }
