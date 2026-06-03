@@ -18,5 +18,8 @@ data class User(
     val profileImagePath: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
     val lastLogin: Long? = null,
-    val isActive: Boolean = true
+    val isActive: Boolean = true,
+    val currentStreak: Int = 0,
+    val lastActivityTimestamp: Long = 0L,
+    val longestStreak: Int = 0
 )
