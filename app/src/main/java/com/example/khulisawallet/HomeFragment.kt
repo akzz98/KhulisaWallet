@@ -153,23 +153,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val tvSafeMessage = view.findViewById<TextView>(R.id.tv_safe_message)
         val tvMonthlyIncome = view.findViewById<TextView>(R.id.tv_monthly_income)
         val tvGoalCommitments = view.findViewById<TextView>(R.id.tv_goal_commitments)
-        val tvDaysRemaining = view.findViewById<TextView>(R.id.tv_days_remaining)
+        val tvSpentThisMonth = view.findViewById<TextView>(R.id.tv_spent_this_month)
         val tvDaysLeft = view.findViewById<TextView>(R.id.tv_days_left)
         val cardSafeToSpend = view.findViewById<MaterialCardView>(R.id.card_safe_to_spend)
 
         val daysLeft = SafeToSpendCalculator.getDaysLeftInMonth()
         tvDaysLeft.text = "$daysLeft days left"
-        tvDaysRemaining.text = "$daysLeft"
 
         var safeIncome = 0.0
         var safeGoalMax = 0.0
+        var safeMonthlySpent = 0.0
 
         fun refreshSafeToSpend() {
-            val result = SafeToSpendCalculator.calculate(safeIncome, safeGoalMax, daysLeft)
+            val result = SafeToSpendCalculator.calculate(
+                safeIncome, safeGoalMax, safeMonthlySpent, daysLeft
+            )
             tvSafeAmount.text = "R %.2f".format(result.dailyAmount)
             tvSafeMessage.text = result.message
             tvMonthlyIncome.text = "R %.2f".format(safeIncome)
             tvGoalCommitments.text = "R %.2f".format(safeGoalMax)
+            tvSpentThisMonth.text = "R %.2f".format(safeMonthlySpent)
 
             val bgColor = when (result.status) {
                 SpendStatus.HEALTHY -> requireContext().getColor(R.color.status_healthy)
@@ -183,6 +186,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         expenseViewModel.getIncomeByDateRange(userId, monthStart, monthEnd)
             .observe(viewLifecycleOwner) { income ->
                 safeIncome = income
+                refreshSafeToSpend()
+            }
+
+        expenseViewModel.getTotalExpensesByDateRange(monthStart, monthEnd)
+            .observe(viewLifecycleOwner) { spent ->
+                safeMonthlySpent = spent ?: 0.0
                 refreshSafeToSpend()
             }
 

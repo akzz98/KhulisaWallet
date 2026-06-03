@@ -7,19 +7,20 @@ object SafeToSpendCalculator {
     /**
      * Calculates how much the user can safely spend today.
      *
-     * Formula: (monthlyIncome - totalGoalMaxAmounts) / daysLeftInMonth
+     * Formula: (monthlyIncome - goalCommitments - monthlySpent) / daysLeftInMonth
      *
-     * @param monthlyIncome   Total income logged this month
-     * @param totalGoalMax    Sum of all active goal maxAmount values (committed budget)
-     * @param daysLeftInMonth Days remaining in the current month (including today)
-     * @return SafeToSpendResult with the daily amount and a status
+     * @param monthlyIncome      Total income logged this month
+     * @param goalCommitments    Sum of active goal target amounts (committed budget)
+     * @param monthlySpent       Total expenses logged this month
+     * @param daysLeftInMonth    Days remaining in the current month (including today)
      */
     fun calculate(
         monthlyIncome: Double,
-        totalGoalMax: Double,
+        goalCommitments: Double,
+        monthlySpent: Double,
         daysLeftInMonth: Int = getDaysLeftInMonth()
     ): SafeToSpendResult {
-        val available = monthlyIncome - totalGoalMax
+        val available = monthlyIncome - goalCommitments - monthlySpent
         val days = if (daysLeftInMonth < 1) 1 else daysLeftInMonth
 
         return when {
@@ -31,7 +32,7 @@ object SafeToSpendCalculator {
             available <= 0.0 -> SafeToSpendResult(
                 dailyAmount = 0.0,
                 status = SpendStatus.TIGHT,
-                message = "Budget tight — avoid spending today"
+                message = "Budget tight — little left this month"
             )
             else -> {
                 val daily = available / days
