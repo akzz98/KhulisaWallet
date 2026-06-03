@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "107249021887",
+    "project_id": "khulisa-wallet",
+    "storage_bucket": "khulisa-wallet.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107249021887:android:e74bb21475088a881c670a",
+        "android_client_info": {
+          "package_name": "com.example.khulisawallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC05Iq9TKy332N-qlnKG6xoFJ7QImLoHO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

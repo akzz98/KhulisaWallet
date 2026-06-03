@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     //enable KSP
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -44,6 +45,9 @@ android {
 
 
 dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
+    implementation("com.google.firebase:firebase-analytics")
+
     val roomVersion = "2.8.4"
     val lifecycleVersion = "2.10.0"
 
