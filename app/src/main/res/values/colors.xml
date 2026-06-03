@@ -21,6 +21,12 @@
     <!-- Legacy alias — use brand green instead of dark purple -->
     <color name="purple_500">#27AE60</color>
 
+    <!-- Amount colours -->
+    <color name="amount_positive">#27AE60</color>
+    <color name="amount_negative">#E74C3C</color>
+    <color name="income_card_bg">#E8F8F0</color>
+    <color name="expense_card_bg">#FDEDEC</color>
+
     <!-- Safe-to-Spend card status backgrounds -->
     <color name="status_healthy">#27AE60</color>
     <color name="status_tight">#E74C3C</color>

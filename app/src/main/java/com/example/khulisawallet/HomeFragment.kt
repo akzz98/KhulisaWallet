@@ -126,16 +126,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         var totalIncome = 0.0
         var totalExpense = 0.0
 
+        fun refreshBalanceDisplay() {
+            val balance = totalIncome - totalExpense
+            tvBalance.text = "R %.2f".format(balance)
+            val balanceColor = if (balance < 0) R.color.amount_negative else R.color.amount_positive
+            tvBalance.setTextColor(requireContext().getColor(balanceColor))
+        }
+
         expenseViewModel.totalIncome.observe(viewLifecycleOwner) { income ->
             totalIncome = income ?: 0.0
             tvIncome.text = "R %.2f".format(totalIncome)
-            tvBalance.text = "R %.2f".format(totalIncome - totalExpense)
+            refreshBalanceDisplay()
         }
 
         expenseViewModel.totalExpenses.observe(viewLifecycleOwner) { expense ->
             totalExpense = expense ?: 0.0
             tvExpense.text = "R %.2f".format(totalExpense)
-            tvBalance.text = "R %.2f".format(totalIncome - totalExpense)
+            refreshBalanceDisplay()
         }
 
         // --- Safe-to-Spend ---
