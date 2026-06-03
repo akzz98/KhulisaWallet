@@ -1,5 +1,6 @@
 package com.example.khulisawallet
 
+import android.view.View
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
@@ -61,18 +62,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureFab(fab: FloatingActionButton, destinationId: Int) {
-        if (destinationId == R.id.navigation_goals) {
-            fab.contentDescription = "Add Goal"
-            fab.setOnClickListener {
-                val navHost = supportFragmentManager
-                    .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
-                (navHost?.childFragmentManager?.primaryNavigationFragment as? GoalsFragment)
-                    ?.openAddGoalDialog()
+        when (destinationId) {
+            R.id.navigation_profile -> {
+                fab.visibility = View.GONE
             }
-        } else {
-            fab.contentDescription = "Add Transaction"
-            fab.setOnClickListener {
-                startActivity(Intent(this, AddExpenseActivity::class.java))
+            R.id.navigation_goals -> {
+                fab.visibility = View.VISIBLE
+                fab.contentDescription = "Add Goal"
+                fab.setOnClickListener {
+                    val navHost = supportFragmentManager
+                        .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
+                    (navHost?.childFragmentManager?.primaryNavigationFragment as? GoalsFragment)
+                        ?.openAddGoalDialog()
+                }
+            }
+            else -> {
+                fab.visibility = View.VISIBLE
+                fab.contentDescription = "Add Transaction"
+                fab.setOnClickListener {
+                    startActivity(Intent(this, AddExpenseActivity::class.java))
+                }
             }
         }
     }
