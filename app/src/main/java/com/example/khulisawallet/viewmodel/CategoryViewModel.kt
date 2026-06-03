@@ -70,15 +70,17 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
     }
 
     fun softDeleteCategory(id: Int) {
+        val userId = _userId.value ?: return
         viewModelScope.launch {
-            val result = repository.softDeleteCategory(id)
+            val result = repository.softDeleteCategory(userId, id)
             _categoryOpResult.postValue(result as Result<Any>)
         }
     }
 
     fun deleteCategory(category: Category) {
+        val userId = _userId.value ?: return
         viewModelScope.launch {
-            repository.deleteCategory(category)
+            repository.deleteCategory(userId, category)
         }
     }
 

@@ -104,18 +104,25 @@ class CategoryRepository(
         }
     }
 
-    suspend fun softDeleteCategory(id: Int): Result<Unit> {
+    suspend fun softDeleteCategory(userId: Int, id: Int): Result<Unit> {
         return try {
             categoryDao.softDeleteCategory(id)
+
+            val updatedCategory = categoryDao.getCategoryById(id)
+            if (updatedCategory != null) {
+                firebaseRepository.saveCategory(userId, updatedCategory)
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun deleteCategory(category: Category): Result<Unit> {
+    suspend fun deleteCategory(userId: Int, category: Category): Result<Unit> {
         return try {
             categoryDao.deleteCategory(category)
+            firebaseRepository.deleteCategory(userId, category.id)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

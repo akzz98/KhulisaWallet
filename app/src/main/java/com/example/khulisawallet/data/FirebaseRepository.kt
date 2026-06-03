@@ -1,6 +1,7 @@
 package com.example.khulisawallet.data
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository(
@@ -90,6 +91,48 @@ class FirebaseRepository(
                         "createdAt" to category.createdAt,
                         "updatedAt" to category.updatedAt
                     )
+                )
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteCategory(userId: Int, categoryId: Int): Result<Unit> {
+        return try {
+            firestore.collection("users")
+                .document(userId.toString())
+                .collection("categories")
+                .document(categoryId.toString())
+                .delete()
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun saveUser(user: User): Result<Unit> {
+        return try {
+            firestore.collection("users")
+                .document(user.id.toString())
+                .set(
+                    mapOf(
+                        "id" to user.id,
+                        "firstName" to user.firstName,
+                        "lastName" to user.lastName,
+                        "email" to user.email,
+                        "createdAt" to user.createdAt,
+                        "lastLogin" to user.lastLogin,
+                        "isActive" to user.isActive,
+                        "currentStreak" to user.currentStreak,
+                        "lastActivityTimestamp" to user.lastActivityTimestamp,
+                        "longestStreak" to user.longestStreak
+                    ),
+                    SetOptions.merge()
                 )
                 .await()
 

@@ -82,6 +82,11 @@ class ExpenseRepository(
                     user.currentStreak
                 )
                 userDao.updateStreak(savedExpense.userId, newStreak, System.currentTimeMillis())
+
+                val updatedUser = userDao.getUserById(savedExpense.userId)
+                if (updatedUser != null) {
+                    firebaseRepository.saveUser(updatedUser)
+                }
             }
 
             Result.success(id)
