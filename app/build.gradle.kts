@@ -49,6 +49,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
 
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     val roomVersion = "2.8.4"
     val lifecycleVersion = "2.10.0"
 
