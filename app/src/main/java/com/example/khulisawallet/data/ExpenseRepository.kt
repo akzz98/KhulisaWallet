@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData
 
 class ExpenseRepository(
     private val expenseDao: ExpenseDao,
-    private val goalDao: GoalDao
+    private val goalDao: GoalDao,
+    private val firebaseRepository: FirebaseRepository = FirebaseRepository()
 ) {
 
     fun getAllExpensesByUser(userId: Int): LiveData<List<Expense>> =
@@ -64,9 +65,14 @@ class ExpenseRepository(
     suspend fun insertExpense(expense: Expense): Result<Long> {
         return try {
             val id = expenseDao.insertExpense(expense)
-            if (expense.type == CategoryType.EXPENSE) {
-                syncExpenseToGoals(expense)
+            val savedExpense = expense.copy(id = id.toInt())
+
+            if (savedExpense.type == CategoryType.EXPENSE) {
+                syncExpenseToGoals(savedExpense)
             }
+
+            firebaseRepository.saveExpense(savedExpense)
+
             Result.success(id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -87,6 +93,7 @@ class ExpenseRepository(
     suspend fun updateExpense(expense: Expense): Result<Unit> {
         return try {
             expenseDao.updateExpense(expense)
+            firebaseRepository.saveExpense(expense)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
