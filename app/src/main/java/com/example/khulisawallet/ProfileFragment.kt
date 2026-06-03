@@ -113,9 +113,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun setupButtons(view: View) {
 
-        // Manage Categories — placeholder toast for now
+        // Manage Categories
         view.findViewById<LinearLayout>(R.id.btn_manage_categories).setOnClickListener {
-            Toast.makeText(requireContext(), "Manage Categories coming soon!", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireContext(), ManageCategoriesActivity::class.java))
         }
 
         // Change Password Dialog
