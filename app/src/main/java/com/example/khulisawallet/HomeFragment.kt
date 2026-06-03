@@ -17,6 +17,8 @@ import com.example.khulisawallet.data.ExpenseRepository
 import com.example.khulisawallet.data.ExpenseWithCategory
 import com.example.khulisawallet.data.GoalRepository
 import com.example.khulisawallet.data.UserRepository
+import com.example.khulisawallet.utils.SafeToSpendCalculator
+import com.example.khulisawallet.utils.SpendStatus
 import com.example.khulisawallet.utils.StreakManager
 import com.example.khulisawallet.viewmodel.CategoryViewModel
 import com.example.khulisawallet.viewmodel.CategoryViewModelFactory
@@ -32,6 +34,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.android.material.card.MaterialCardView
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -152,6 +155,51 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             totalExpense = expense ?: 0.0
             tvExpense.text = "R %.2f".format(totalExpense)
             tvBalance.text = "R %.2f".format(totalIncome - totalExpense)
+        }
+
+        // --- Safe-to-Spend ---
+        val tvSafeAmount = view.findViewById<TextView>(R.id.tv_safe_amount)
+        val tvSafeMessage = view.findViewById<TextView>(R.id.tv_safe_message)
+        val tvMonthlyIncome = view.findViewById<TextView>(R.id.tv_monthly_income)
+        val tvGoalCommitments = view.findViewById<TextView>(R.id.tv_goal_commitments)
+        val tvDaysRemaining = view.findViewById<TextView>(R.id.tv_days_remaining)
+        val tvDaysLeft = view.findViewById<TextView>(R.id.tv_days_left)
+        val cardSafeToSpend = view.findViewById<MaterialCardView>(R.id.card_safe_to_spend)
+
+        val daysLeft = SafeToSpendCalculator.getDaysLeftInMonth()
+        tvDaysLeft.text = "$daysLeft days left"
+        tvDaysRemaining.text = "$daysLeft"
+
+        var safeIncome = 0.0
+        var safeGoalMax = 0.0
+
+        fun refreshSafeToSpend() {
+            val result = SafeToSpendCalculator.calculate(safeIncome, safeGoalMax, daysLeft)
+            tvSafeAmount.text = "R %.2f".format(result.dailyAmount)
+            tvSafeMessage.text = result.message
+            tvMonthlyIncome.text = "R %.2f".format(safeIncome)
+            tvGoalCommitments.text = "R %.2f".format(safeGoalMax)
+
+            val bgColor = when (result.status) {
+                SpendStatus.HEALTHY -> requireContext().getColor(R.color.colorPrimary)
+                SpendStatus.TIGHT -> requireContext().getColor(android.R.color.holo_red_dark)
+                SpendStatus.NO_INCOME -> requireContext().getColor(android.R.color.darker_gray)
+            }
+            cardSafeToSpend.setCardBackgroundColor(bgColor)
+        }
+
+        val (monthStart, monthEnd) = SafeToSpendCalculator.getMonthDateRange()
+        expenseViewModel.getExpensesByDateRange(monthStart, monthEnd)
+            .observe(viewLifecycleOwner) { expenses ->
+                safeIncome = expenses
+                    .filter { it.expense.type == CategoryType.INCOME }
+                    .sumOf { it.expense.amount }
+                refreshSafeToSpend()
+            }
+
+        goalViewModel.activeGoals.observe(viewLifecycleOwner) { goals ->
+            safeGoalMax = goals.sumOf { it.maxGoal ?: 0.0 }
+            refreshSafeToSpend()
         }
 
         // --- Observe Goal Alerts ---

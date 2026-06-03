@@ -205,6 +205,12 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Safe-to-Spend Card -->
+        <include
+            layout="@layout/card_safe_to_spend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <!-- Goal Alert Card (shown only when goals are below min or above max) -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_goal_alert"
