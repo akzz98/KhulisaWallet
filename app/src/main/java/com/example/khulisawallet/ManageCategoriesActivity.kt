@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.khulisawallet.data.*
+import com.example.khulisawallet.utils.applySystemBarInsets
 import com.example.khulisawallet.viewmodel.*
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -32,6 +33,7 @@ class ManageCategoriesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_manage_categories)
+        applySystemBarInsets()
 
         val prefs = getSharedPreferences("khulisa_prefs", 0)
         userId = prefs.getInt("user_id", -1)

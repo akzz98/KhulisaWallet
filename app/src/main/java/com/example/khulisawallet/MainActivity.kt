@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.khulisawallet.data.AppDatabase
 import com.example.khulisawallet.data.CategoryRepository
+import com.example.khulisawallet.utils.applySystemBarInsets
 import com.example.khulisawallet.utils.StreakManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        applySystemBarInsets()
 
         streakDialogShown = savedInstanceState?.getBoolean(KEY_STREAK_DIALOG_SHOWN) == true
 

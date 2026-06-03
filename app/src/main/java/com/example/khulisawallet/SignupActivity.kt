@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.khulisawallet.data.AppDatabase
 import com.example.khulisawallet.data.UserRepository
 import com.example.khulisawallet.databinding.ActivitySignupBinding
+import com.example.khulisawallet.utils.applySystemBarInsets
 import com.example.khulisawallet.viewmodel.UserViewModel
 import com.example.khulisawallet.viewmodel.UserViewModelFactory
 import java.security.MessageDigest
@@ -26,6 +27,7 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applySystemBarInsets()
 
         // Observe registration result
         viewModel.userOpResult.observe(this) { result ->

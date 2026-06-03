@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.khulisawallet.data.AppDatabase
 import com.example.khulisawallet.data.CategoryRepository
 import com.example.khulisawallet.databinding.ActivitySplashBinding
+import com.example.khulisawallet.utils.applySystemBarInsets
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applySystemBarInsets()
 
         // Preload default categories on first launch, show splash for 2.5 seconds, then route
         lifecycleScope.launch {

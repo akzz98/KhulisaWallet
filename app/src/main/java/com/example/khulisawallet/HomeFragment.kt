@@ -162,9 +162,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             tvGoalCommitments.text = "R %.2f".format(safeGoalMax)
 
             val bgColor = when (result.status) {
-                SpendStatus.HEALTHY -> requireContext().getColor(R.color.colorPrimary)
-                SpendStatus.TIGHT -> requireContext().getColor(android.R.color.holo_red_dark)
-                SpendStatus.NO_INCOME -> requireContext().getColor(android.R.color.darker_gray)
+                SpendStatus.HEALTHY -> requireContext().getColor(R.color.status_healthy)
+                SpendStatus.TIGHT -> requireContext().getColor(R.color.status_tight)
+                SpendStatus.NO_INCOME -> requireContext().getColor(R.color.status_no_income)
             }
             cardSafeToSpend.setCardBackgroundColor(bgColor)
         }

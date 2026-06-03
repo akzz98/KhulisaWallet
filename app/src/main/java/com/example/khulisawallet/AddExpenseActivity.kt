@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.khulisawallet.data.*
 import com.example.khulisawallet.utils.ImageUtils
+import com.example.khulisawallet.utils.applySystemBarInsets
 import com.example.khulisawallet.viewmodel.*
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -76,6 +77,7 @@ class AddExpenseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_expense)
+        applySystemBarInsets()
 
         bindViews()
         setupToolbar()

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.khulisawallet.data.AppDatabase
 import com.example.khulisawallet.data.UserRepository
 import com.example.khulisawallet.databinding.ActivityLoginBinding
+import com.example.khulisawallet.utils.applySystemBarInsets
 import com.example.khulisawallet.viewmodel.UserViewModel
 import com.example.khulisawallet.viewmodel.UserViewModelFactory
 import java.security.MessageDigest
@@ -26,6 +27,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applySystemBarInsets()
 
         // Observe current user and save to SharedPreferences
         viewModel.currentUser.observe(this) { user ->

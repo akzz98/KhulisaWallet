@@ -2,7 +2,27 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="gray">#888888</color>
+
+    <!-- Brand -->
     <color name="colorPrimary">#2ECC71</color>
-    <color name="purple_500">#800080</color>
+    <color name="colorPrimaryDark">#27AE60</color>
+    <color name="colorPrimaryLight">#E8F8F0</color>
+
+    <!-- Text (readable on light backgrounds) -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#555555</color>
+    <color name="text_hint">#888888</color>
+    <color name="gray">#888888</color>
+
+    <!-- Surfaces -->
+    <color name="background_light">#F5F5F5</color>
+    <color name="surface_card">#FFFFFF</color>
+
+    <!-- Legacy alias — use brand green instead of dark purple -->
+    <color name="purple_500">#27AE60</color>
+
+    <!-- Safe-to-Spend card status backgrounds -->
+    <color name="status_healthy">#27AE60</color>
+    <color name="status_tight">#E74C3C</color>
+    <color name="status_no_income">#78909C</color>
 </resources>
