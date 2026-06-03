@@ -47,6 +47,7 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.14.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 
     val roomVersion = "2.8.4"
     val lifecycleVersion = "2.10.0"

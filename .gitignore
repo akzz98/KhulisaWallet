@@ -65,3 +65,4 @@ proguard/
 *.class
 *.jar
 *.war
+.idea/misc.xml
