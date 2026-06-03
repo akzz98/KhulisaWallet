@@ -10,7 +10,7 @@ object SafeToSpendCalculator {
      * Formula: (monthlyIncome - goalCommitments - monthlySpent) / daysLeftInMonth
      *
      * @param monthlyIncome      Total income logged this month
-     * @param goalCommitments    Sum of active goal target amounts (committed budget)
+     * @param goalCommitments    Sum of active goal maxGoal values (budget caps)
      * @param monthlySpent       Total expenses logged this month
      * @param daysLeftInMonth    Days remaining in the current month (including today)
      */

@@ -43,6 +43,10 @@ class GoalViewModel(
         repository.getTotalTargetAmount(it)
     }
 
+    val totalMaxGoalAmount: LiveData<Double> = _userId.switchMap {
+        repository.getTotalMaxGoalAmount(it)
+    }
+
     val totalSavedAmount: LiveData<Double?> = _userId.switchMap {
         repository.getTotalSavedAmount(it)
     }

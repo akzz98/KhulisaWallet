@@ -195,8 +195,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 refreshSafeToSpend()
             }
 
-        goalViewModel.totalTargetAmount.observe(viewLifecycleOwner) { goalMax ->
-            safeGoalMax = goalMax ?: 0.0
+        goalViewModel.totalMaxGoalAmount.observe(viewLifecycleOwner) { goalMax ->
+            safeGoalMax = goalMax
             refreshSafeToSpend()
         }
 

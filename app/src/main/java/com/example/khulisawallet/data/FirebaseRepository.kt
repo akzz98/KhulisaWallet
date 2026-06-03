@@ -141,4 +141,66 @@ class FirebaseRepository(
             Result.failure(e)
         }
     }
+
+    suspend fun fetchCategories(userId: Int): Result<List<Category>> {
+        return try {
+            val snapshot = firestore.collection("users")
+                .document(userId.toString())
+                .collection("categories")
+                .get()
+                .await()
+
+            val categories = snapshot.documents.mapNotNull { it.toCategory() }
+            Result.success(categories)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun fetchExpenses(userId: Int): Result<List<Expense>> {
+        return try {
+            val snapshot = firestore.collection("users")
+                .document(userId.toString())
+                .collection("expenses")
+                .get()
+                .await()
+
+            val expenses = snapshot.documents.mapNotNull { it.toExpense() }
+            Result.success(expenses)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun fetchGoals(userId: Int): Result<List<Goal>> {
+        return try {
+            val snapshot = firestore.collection("users")
+                .document(userId.toString())
+                .collection("goals")
+                .get()
+                .await()
+
+            val goals = snapshot.documents.mapNotNull { it.toGoal() }
+            Result.success(goals)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun fetchUserProfile(userId: Int): Result<FirebaseUserProfile?> {
+        return try {
+            val snapshot = firestore.collection("users")
+                .document(userId.toString())
+                .get()
+                .await()
+
+            if (!snapshot.exists()) {
+                Result.success(null)
+            } else {
+                Result.success(snapshot.toUserProfile())
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

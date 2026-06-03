@@ -13,6 +13,12 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(categories: List<Category>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(categories: List<Category>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertCategory(category: Category)
+
     // --- READ ---
     @Query("SELECT * FROM categories WHERE isActive = 1 ORDER BY name ASC")
     fun getAllActiveCategories(): LiveData<List<Category>>

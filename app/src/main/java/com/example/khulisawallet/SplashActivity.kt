@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.khulisawallet.data.AppDatabase
 import com.example.khulisawallet.data.CategoryRepository
+import com.example.khulisawallet.data.FirebaseSyncRepository
 import com.example.khulisawallet.databinding.ActivitySplashBinding
 import com.example.khulisawallet.utils.applySystemBarInsets
 import kotlinx.coroutines.async
@@ -37,10 +38,16 @@ class SplashActivity : AppCompatActivity() {
             }
 
             val categoryRepository = CategoryRepository(db.categoryDao())
-            val syncUserId = if (userExists) userId else null
-            val preload = async { categoryRepository.preloadDefaults(syncUserId) }
-            delay(2500L)
-            preload.await()
+
+            if (userExists) {
+                val sync = async { FirebaseSyncRepository(db).syncUserData(userId) }
+                delay(2500L)
+                sync.await()
+            } else {
+                val preload = async { categoryRepository.preloadDefaults(null) }
+                delay(2500L)
+                preload.await()
+            }
 
             if (userExists) {
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))

@@ -36,6 +36,9 @@ class GoalRepository(
     fun getTotalTargetAmount(userId: Int): LiveData<Double?> =
         goalDao.getTotalTargetAmount(userId)
 
+    fun getTotalMaxGoalAmount(userId: Int): LiveData<Double> =
+        goalDao.getTotalMaxGoalAmount(userId)
+
     fun getTotalSavedAmount(userId: Int): LiveData<Double?> =
         goalDao.getTotalSavedAmount(userId)
 

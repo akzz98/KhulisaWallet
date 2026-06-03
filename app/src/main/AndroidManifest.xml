@@ -49,6 +49,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- For saving to internal storage (not required for API 29+, but good for safety) -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />

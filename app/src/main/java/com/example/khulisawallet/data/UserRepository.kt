@@ -2,12 +2,17 @@ package com.example.khulisawallet.data
 
 import androidx.lifecycle.LiveData
 
-class UserRepository(private val userDao: UserDao) {
+class UserRepository(
+    private val userDao: UserDao,
+    private val firebaseRepository: FirebaseRepository = FirebaseRepository()
+) {
 
     // --- CREATE ---
     suspend fun registerUser(user: User): Result<Long> {
         return try {
             val id = userDao.insertUser(user)
+            val savedUser = user.copy(id = id.toInt())
+            firebaseRepository.saveUser(savedUser)
             Result.success(id)
         } catch (e: Exception) {
             // Catches duplicate email exception from the abort strategy

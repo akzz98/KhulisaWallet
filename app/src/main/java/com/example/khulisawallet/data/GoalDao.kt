@@ -10,6 +10,12 @@ interface GoalDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertGoal(goal: Goal): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertGoal(goal: Goal)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAllGoals(goals: List<Goal>)
+
     // --- READ ---
     @Query("SELECT * FROM goals WHERE userId = :userId ORDER BY createdAt DESC")
     fun getAllGoalsByUser(userId: Int): LiveData<List<Goal>>
@@ -65,6 +71,9 @@ interface GoalDao {
 
     @Query("SELECT SUM(targetAmount) FROM goals WHERE userId = :userId AND status = 'ACTIVE'")
     fun getTotalTargetAmount(userId: Int): LiveData<Double?>
+
+    @Query("SELECT COALESCE(SUM(maxGoal), 0.0) FROM goals WHERE userId = :userId AND status = 'ACTIVE' AND maxGoal IS NOT NULL")
+    fun getTotalMaxGoalAmount(userId: Int): LiveData<Double>
 
     @Query("SELECT SUM(currentAmount) FROM goals WHERE userId = :userId AND status = 'ACTIVE'")
     fun getTotalSavedAmount(userId: Int): LiveData<Double?>

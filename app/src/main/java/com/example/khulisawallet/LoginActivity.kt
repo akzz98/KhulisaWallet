@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.khulisawallet.data.AppDatabase
+import com.example.khulisawallet.data.FirebaseSyncRepository
 import com.example.khulisawallet.data.UserRepository
 import com.example.khulisawallet.databinding.ActivityLoginBinding
 import com.example.khulisawallet.utils.applySystemBarInsets
 import com.example.khulisawallet.viewmodel.UserViewModel
 import com.example.khulisawallet.viewmodel.UserViewModelFactory
+import kotlinx.coroutines.launch
 import java.security.MessageDigest
 
 class LoginActivity : AppCompatActivity() {
@@ -32,16 +35,26 @@ class LoginActivity : AppCompatActivity() {
         // Observe current user and save to SharedPreferences
         viewModel.currentUser.observe(this) { user ->
             user?.let {
-                // After successful login: save user's ID and first name to SharedPreferences
-                val prefs = getSharedPreferences("khulisa_prefs", MODE_PRIVATE)
-                prefs.edit()
-                    .putInt("user_id", user.id)
-                    .putString("user_first_name", user.firstName)
-                    .apply()
+                lifecycleScope.launch {
+                    val syncResult = FirebaseSyncRepository(AppDatabase.getDatabase(this@LoginActivity))
+                        .syncUserData(it.id)
+                    if (syncResult.isFailure) {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Signed in — cloud sync unavailable, using local data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
-                Toast.makeText(this, "Welcome back!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                    getSharedPreferences("khulisa_prefs", MODE_PRIVATE).edit()
+                        .putInt("user_id", user.id)
+                        .putString("user_first_name", user.firstName)
+                        .apply()
+
+                    Toast.makeText(this@LoginActivity, "Welcome back!", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                    finish()
+                }
             }
         }
 

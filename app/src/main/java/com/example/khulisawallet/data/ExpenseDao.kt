@@ -10,6 +10,12 @@ interface ExpenseDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertExpense(expense: Expense): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertExpense(expense: Expense)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAllExpenses(expenses: List<Expense>)
+
     // --- READ (Basic) ---
     @Query("SELECT * FROM expenses WHERE userId = :userId ORDER BY date DESC")
     fun getAllExpensesByUser(userId: Int): LiveData<List<Expense>>
