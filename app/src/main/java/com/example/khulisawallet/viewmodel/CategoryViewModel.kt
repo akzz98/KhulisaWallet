@@ -39,6 +39,7 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
         type: CategoryType,
         parentCategoryId: Int? = null
     ) {
+        val userId = _userId.value ?: return
         viewModelScope.launch {
             val category = Category(
                 name = name,
@@ -48,7 +49,7 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
                 parentCategoryId = parentCategoryId,
                 isDefault = false
             )
-            val result = repository.insertCategory(category)
+            val result = repository.insertCategory(userId, category)
             _categoryOpResult.postValue(result as Result<Any>)
         }
     }
@@ -60,8 +61,9 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
     }
 
     fun updateCategoryDetails(id: Int, name: String, iconName: String, colorHex: String) {
+        val userId = _userId.value ?: return
         viewModelScope.launch {
-            val result = repository.updateCategoryDetails(id, name, iconName, colorHex)
+            val result = repository.updateCategoryDetails(userId, id, name, iconName, colorHex)
             _categoryOpResult.postValue(result as Result<Any>)
         }
     }

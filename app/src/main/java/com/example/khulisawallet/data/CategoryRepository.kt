@@ -2,7 +2,10 @@ package com.example.khulisawallet.data
 
 import androidx.lifecycle.LiveData
 
-class CategoryRepository(private val categoryDao: CategoryDao) {
+class CategoryRepository(
+    private val categoryDao: CategoryDao,
+    private val firebaseRepository: FirebaseRepository = FirebaseRepository()
+) {
 
     val allActiveCategories: LiveData<List<Category>> = categoryDao.getAllActiveCategories()
     val defaultCategories: LiveData<List<Category>> = categoryDao.getDefaultCategories()
@@ -21,9 +24,13 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
         return categoryDao.getCategoryById(id)
     }
 
-    suspend fun insertCategory(category: Category): Result<Long> {
+    suspend fun insertCategory(userId: Int, category: Category): Result<Long> {
         return try {
             val id = categoryDao.insertCategory(category)
+            val savedCategory = category.copy(id = id.toInt())
+
+            firebaseRepository.saveCategory(userId, savedCategory)
+
             Result.success(id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -62,6 +69,7 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
     }
 
     suspend fun updateCategoryDetails(
+        userId: Int,
         id: Int,
         name: String,
         iconName: String,
@@ -69,6 +77,12 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
     ): Result<Unit> {
         return try {
             categoryDao.updateCategoryDetails(id, name, iconName, colorHex)
+
+            val updatedCategory = categoryDao.getCategoryById(id)
+            if (updatedCategory != null) {
+                firebaseRepository.saveCategory(userId, updatedCategory)
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
