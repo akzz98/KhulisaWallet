@@ -189,16 +189,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         val (monthStart, monthEnd) = SafeToSpendCalculator.getMonthDateRange()
-        expenseViewModel.getExpensesByDateRange(monthStart, monthEnd)
-            .observe(viewLifecycleOwner) { expenses ->
-                safeIncome = expenses
-                    .filter { it.expense.type == CategoryType.INCOME }
-                    .sumOf { it.expense.amount }
+        expenseViewModel.getIncomeByDateRange(userId, monthStart, monthEnd)
+            .observe(viewLifecycleOwner) { income ->
+                safeIncome = income
                 refreshSafeToSpend()
             }
 
-        goalViewModel.activeGoals.observe(viewLifecycleOwner) { goals ->
-            safeGoalMax = goals.sumOf { it.maxGoal ?: 0.0 }
+        goalViewModel.totalTargetAmount.observe(viewLifecycleOwner) { goalMax ->
+            safeGoalMax = goalMax ?: 0.0
             refreshSafeToSpend()
         }
 

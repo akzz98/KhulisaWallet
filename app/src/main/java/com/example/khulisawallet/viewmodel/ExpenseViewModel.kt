@@ -44,6 +44,9 @@ class ExpenseViewModel(private val repository: ExpenseRepository) : ViewModel() 
         return repository.getTotalExpensesByDateRange(_userId.value ?: return MutableLiveData(), startDate, endDate)
     }
 
+    fun getIncomeByDateRange(userId: Int, startDate: Long, endDate: Long): LiveData<Double> =
+        repository.getIncomeByDateRange(userId, startDate, endDate)
+
     fun addExpense(
         categoryId: Int,
         title: String,

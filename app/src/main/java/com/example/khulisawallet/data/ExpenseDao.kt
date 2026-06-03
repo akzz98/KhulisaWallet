@@ -56,6 +56,9 @@ interface ExpenseDao {
     @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND type = 'EXPENSE' AND date BETWEEN :startDate AND :endDate")
     fun getTotalExpensesByDateRange(userId: Int, startDate: Long, endDate: Long): LiveData<Double?>
 
+    @Query("SELECT COALESCE(SUM(amount), 0.0) FROM expenses WHERE userId = :userId AND type = 'INCOME' AND date BETWEEN :startDate AND :endDate")
+    fun getIncomeByDateRange(userId: Int, startDate: Long, endDate: Long): LiveData<Double>
+
     @Query("SELECT SUM(amount) FROM expenses WHERE userId = :userId AND categoryId = :categoryId AND date BETWEEN :startDate AND :endDate")
     fun getTotalByCategoryAndDateRange(userId: Int, categoryId: Int, startDate: Long, endDate: Long): LiveData<Double?>
 

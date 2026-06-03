@@ -42,6 +42,9 @@ class ExpenseRepository(
     fun getTotalExpensesByDateRange(userId: Int, startDate: Long, endDate: Long): LiveData<Double?> =
         expenseDao.getTotalExpensesByDateRange(userId, startDate, endDate)
 
+    fun getIncomeByDateRange(userId: Int, startDate: Long, endDate: Long): LiveData<Double> =
+        expenseDao.getIncomeByDateRange(userId, startDate, endDate)
+
     fun getTotalByCategoryAndDateRange(
         userId: Int,
         categoryId: Int,
