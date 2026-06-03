@@ -23,8 +23,9 @@ class MainActivity : AppCompatActivity() {
 
         val db = AppDatabase.getDatabase(this)
         val categoryRepository = CategoryRepository(db.categoryDao())
+        val userId = getSharedPreferences("khulisa_prefs", MODE_PRIVATE).getInt("user_id", -1)
         lifecycleScope.launch {
-            categoryRepository.preloadDefaults()
+            categoryRepository.preloadDefaults(userId.takeIf { it > 0 })
         }
 
         navView.setupWithNavController(navController)

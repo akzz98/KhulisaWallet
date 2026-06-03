@@ -25,22 +25,20 @@ class SplashActivity : AppCompatActivity() {
 
         // Preload default categories on first launch, show splash for 2.5 seconds, then route
         lifecycleScope.launch {
-            val categoryRepository = CategoryRepository(
-                AppDatabase.getDatabase(this@SplashActivity).categoryDao()
-            )
-            val preload = async { categoryRepository.preloadDefaults() }
-            delay(2500L)
-            preload.await()
-
             val sharedPref = getSharedPreferences("khulisa_prefs", Context.MODE_PRIVATE)
             val userId = sharedPref.getInt("user_id", -1)
             val db = AppDatabase.getDatabase(this@SplashActivity)
             val userExists = userId != -1 && db.userDao().getUserById(userId) != null
 
-            // Prefs can outlive a destructive DB migration — clear stale session
             if (userId != -1 && !userExists) {
                 sharedPref.edit().clear().apply()
             }
+
+            val categoryRepository = CategoryRepository(db.categoryDao())
+            val syncUserId = if (userExists) userId else null
+            val preload = async { categoryRepository.preloadDefaults(syncUserId) }
+            delay(2500L)
+            preload.await()
 
             if (userExists) {
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))

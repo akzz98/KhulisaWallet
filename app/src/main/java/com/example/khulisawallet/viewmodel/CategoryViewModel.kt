@@ -55,8 +55,9 @@ class CategoryViewModel(private val repository: CategoryRepository) : ViewModel(
     }
 
     fun preloadDefaultCategories() {
+        val userId = _userId.value
         viewModelScope.launch {
-            repository.preloadDefaults()
+            repository.preloadDefaults(userId?.takeIf { it > 0 })
         }
     }
 

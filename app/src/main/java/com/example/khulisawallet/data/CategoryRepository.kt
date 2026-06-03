@@ -37,9 +37,14 @@ class CategoryRepository(
         }
     }
 
-    suspend fun preloadDefaults() {
+    suspend fun preloadDefaults(userId: Int? = null) {
         val count = categoryDao.getCategoryCount()
-        if (count > 0) return
+        if (count > 0) {
+            if (userId != null && userId > 0) {
+                syncDefaultsToFirebase(userId)
+            }
+            return
+        }
 
         val defaults = listOf(
             Category(name = "Food & Groceries",  iconName = "ic_food",       colorHex = "#FF6B6B", type = CategoryType.EXPENSE, isDefault = true),
@@ -57,6 +62,16 @@ class CategoryRepository(
             Category(name = "Other Income",       iconName = "ic_other",      colorHex = "#607D8B", type = CategoryType.INCOME, isDefault = true)
         )
         categoryDao.insertAll(defaults)
+
+        if (userId != null && userId > 0) {
+            syncDefaultsToFirebase(userId)
+        }
+    }
+
+    private suspend fun syncDefaultsToFirebase(userId: Int) {
+        for (category in categoryDao.getDefaultCategoriesSync()) {
+            firebaseRepository.saveCategory(userId, category)
+        }
     }
 
     suspend fun updateCategory(category: Category): Result<Unit> {
