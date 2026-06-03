@@ -35,8 +35,12 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
         observeGoals(view)
 
         view.findViewById<MaterialButton>(R.id.btn_add_goal).setOnClickListener {
-            showAddGoalDialog()
+            openAddGoalDialog()
         }
+    }
+
+    fun openAddGoalDialog() {
+        showAddGoalDialog()
     }
 
     private fun setupViewModels() {

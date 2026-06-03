@@ -139,7 +139,7 @@
         android:id="@+id/tv_empty_goals"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No goals yet.\nTap '+ Add Goal' to create one!"
+        android:text="No goals yet.\nTap + to create your first goal!"
         android:textAlignment="center"
         android:textColor="#AAAAAA"
         android:textSize="14sp"

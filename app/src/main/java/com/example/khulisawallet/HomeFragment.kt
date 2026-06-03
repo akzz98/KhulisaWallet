@@ -81,6 +81,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         view.findViewById<TextView>(R.id.tv_date).text = dateStr
 
         val pieChart = view.findViewById<PieChart>(R.id.spendingPieChart)
+        val cardChart = view.findViewById<MaterialCardView>(R.id.card_chart)
         setupPieChart(pieChart)
 
         var latestExpenses: List<ExpenseWithCategory> = emptyList()
@@ -90,7 +91,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val expenseOnly = latestExpenses
                 .map { it.expense }
                 .filter { it.type == CategoryType.EXPENSE }
-            if (expenseOnly.isNotEmpty() && latestCategories.isNotEmpty()) {
+            val hasSpending = expenseOnly.isNotEmpty() && latestCategories.isNotEmpty()
+            cardChart.visibility = if (hasSpending) View.VISIBLE else View.GONE
+            if (hasSpending) {
                 updateChartData(pieChart, expenseOnly, latestCategories)
             }
         }

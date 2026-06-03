@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.khulisawallet.data.AppDatabase
 import com.example.khulisawallet.data.CategoryRepository
@@ -39,9 +41,7 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         val fab: FloatingActionButton = findViewById(R.id.fab_add_expense)
-        fab.setOnClickListener {
-            startActivity(Intent(this, AddExpenseActivity::class.java))
-        }
+        setupFab(navController, fab)
 
         if (!streakDialogShown) {
             showStreakWelcomeDialog(userId)
@@ -51,6 +51,30 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(KEY_STREAK_DIALOG_SHOWN, streakDialogShown)
+    }
+
+    private fun setupFab(navController: NavController, fab: FloatingActionButton) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            configureFab(fab, destination.id)
+        }
+        configureFab(fab, navController.currentDestination?.id ?: R.id.navigation_home)
+    }
+
+    private fun configureFab(fab: FloatingActionButton, destinationId: Int) {
+        if (destinationId == R.id.navigation_goals) {
+            fab.contentDescription = "Add Goal"
+            fab.setOnClickListener {
+                val navHost = supportFragmentManager
+                    .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
+                (navHost?.childFragmentManager?.primaryNavigationFragment as? GoalsFragment)
+                    ?.openAddGoalDialog()
+            }
+        } else {
+            fab.contentDescription = "Add Transaction"
+            fab.setOnClickListener {
+                startActivity(Intent(this, AddExpenseActivity::class.java))
+            }
+        }
     }
 
     private fun showStreakWelcomeDialog(userId: Int) {
