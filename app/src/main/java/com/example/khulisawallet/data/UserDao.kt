@@ -49,6 +49,15 @@ interface UserDao {
     // Soft delete (keeps data intact)
     suspend fun deactivateUser(userId: Int)
 
+    @Query("""
+        UPDATE users 
+        SET currentStreak = :streak, 
+            lastActivityTimestamp = :timestamp,
+            longestStreak = CASE WHEN :streak > longestStreak THEN :streak ELSE longestStreak END
+        WHERE id = :userId
+    """)
+    suspend fun updateStreak(userId: Int, streak: Int, timestamp: Long)
+
     // --- DELETE User ---
     @Delete
     // Hard delete when needed

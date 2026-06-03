@@ -51,7 +51,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao(), db.userDao()))
         )[ExpenseViewModel::class.java]
 
         categoryViewModel = ViewModelProvider(
@@ -63,7 +63,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             this,
             GoalViewModelFactory(
                 GoalRepository(db.goalDao(), db.expenseDao(), db.categoryDao()),
-                ExpenseRepository(db.expenseDao(), db.goalDao()),
+                ExpenseRepository(db.expenseDao(), db.goalDao(), db.userDao()),
                 CategoryRepository(db.categoryDao())
             )
         )[GoalViewModel::class.java]

@@ -120,7 +120,7 @@ class AddExpenseActivity : AppCompatActivity() {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao(), db.userDao()))
         )[ExpenseViewModel::class.java]
         expenseViewModel.setUser(userId)
 

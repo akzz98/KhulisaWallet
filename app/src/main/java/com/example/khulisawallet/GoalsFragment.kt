@@ -46,7 +46,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             this,
             GoalViewModelFactory(
                 GoalRepository(db.goalDao(), db.expenseDao(), db.categoryDao()),
-                ExpenseRepository(db.expenseDao(), db.goalDao()),
+                ExpenseRepository(db.expenseDao(), db.goalDao(), db.userDao()),
                 CategoryRepository(db.categoryDao())
             )
         )[GoalViewModel::class.java]
@@ -59,7 +59,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao(), db.userDao()))
         )[ExpenseViewModel::class.java]
         expenseViewModel.setUser(userId)
 

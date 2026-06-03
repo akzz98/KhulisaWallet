@@ -55,7 +55,7 @@ class HistoryFragment : Fragment(R.layout.fragment_history) {
 
         expenseViewModel = ViewModelProvider(
             this,
-            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
+            ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao(), db.userDao()))
         )[ExpenseViewModel::class.java]
         expenseViewModel.setUser(userId)
 

@@ -1,10 +1,12 @@
 package com.example.khulisawallet.data
 
 import androidx.lifecycle.LiveData
+import com.example.khulisawallet.utils.StreakManager
 
 class ExpenseRepository(
     private val expenseDao: ExpenseDao,
     private val goalDao: GoalDao,
+    private val userDao: UserDao,
     private val firebaseRepository: FirebaseRepository = FirebaseRepository()
 ) {
 
@@ -72,6 +74,15 @@ class ExpenseRepository(
             }
 
             firebaseRepository.saveExpense(savedExpense)
+
+            val user = userDao.getUserById(savedExpense.userId)
+            if (user != null) {
+                val newStreak = StreakManager.calculateNewStreak(
+                    user.lastActivityTimestamp,
+                    user.currentStreak
+                )
+                userDao.updateStreak(savedExpense.userId, newStreak, System.currentTimeMillis())
+            }
 
             Result.success(id)
         } catch (e: Exception) {
