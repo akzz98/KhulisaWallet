@@ -16,12 +16,16 @@ import com.example.khulisawallet.data.Expense
 import com.example.khulisawallet.data.ExpenseRepository
 import com.example.khulisawallet.data.ExpenseWithCategory
 import com.example.khulisawallet.data.GoalRepository
+import com.example.khulisawallet.data.UserRepository
+import com.example.khulisawallet.utils.StreakManager
 import com.example.khulisawallet.viewmodel.CategoryViewModel
 import com.example.khulisawallet.viewmodel.CategoryViewModelFactory
 import com.example.khulisawallet.viewmodel.ExpenseViewModel
 import com.example.khulisawallet.viewmodel.ExpenseViewModelFactory
 import com.example.khulisawallet.viewmodel.GoalViewModel
 import com.example.khulisawallet.viewmodel.GoalViewModelFactory
+import com.example.khulisawallet.viewmodel.UserViewModel
+import com.example.khulisawallet.viewmodel.UserViewModelFactory
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
@@ -36,6 +40,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var expenseViewModel: ExpenseViewModel
     private lateinit var categoryViewModel: CategoryViewModel
     private lateinit var goalViewModel: GoalViewModel
+    private lateinit var userViewModel: UserViewModel
     private lateinit var expenseAdapter: ExpenseAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,8 +73,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             )
         )[GoalViewModel::class.java]
 
+        userViewModel = ViewModelProvider(
+            this,
+            UserViewModelFactory(UserRepository(db.userDao()))
+        )[UserViewModel::class.java]
+
         expenseViewModel.setUser(userId)
         goalViewModel.setUser(userId)
+
+        val tvStreakCount = view.findViewById<TextView>(R.id.tv_streak_count)
+        val tvStreakBadge = view.findViewById<TextView>(R.id.tv_streak_badge)
+
+        userViewModel.getUserById(userId).observe(viewLifecycleOwner) { user ->
+            user ?: return@observe
+            tvStreakCount.text = StreakManager.formatStreakCount(user.currentStreak)
+            tvStreakBadge.text = StreakManager.formatRankLabel(user.currentStreak)
+        }
 
         // --- Greeting & Date ---
         val userName = prefs.getString("user_first_name", "User") ?: "User"

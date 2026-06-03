@@ -42,4 +42,12 @@ object StreakManager {
             else -> "Getting Started"
         }
     }
+
+    fun formatStreakCount(streak: Int): String = when {
+        streak <= 0 -> "Start your streak today!"
+        streak == 1 -> "1 Day Streak!"
+        else -> "$streak Day Streak!"
+    }
+
+    fun formatRankLabel(streak: Int): String = "Rank: ${getBadgeTitle(streak)}"
 }

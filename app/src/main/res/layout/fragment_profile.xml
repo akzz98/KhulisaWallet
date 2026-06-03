@@ -141,6 +141,61 @@
 
         </LinearLayout>
 
+        <!-- Growth Streak Status -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_profile_streak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="#FFF3E0">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🔥 Khulisa Growth Streak"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#E65100"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tv_profile_streak_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start your streak today!"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#1A1A1A" />
+
+                <TextView
+                    android:id="@+id/tv_profile_streak_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rank: Getting Started"
+                    android:textSize="13sp"
+                    android:textColor="#888888"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:id="@+id/tv_profile_longest_streak"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Longest streak: 0 days"
+                    android:textSize="12sp"
+                    android:textColor="#888888"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Account Info Section -->
         <TextView
             android:layout_width="wrap_content"

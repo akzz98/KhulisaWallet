@@ -14,6 +14,7 @@ import com.example.khulisawallet.data.ExpenseRepository
 import com.example.khulisawallet.data.CategoryRepository
 import com.example.khulisawallet.data.GoalRepository
 import com.example.khulisawallet.data.UserRepository
+import com.example.khulisawallet.utils.StreakManager
 import com.example.khulisawallet.viewmodel.*
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -91,6 +92,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             val dateStr = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
                 .format(Date(user.createdAt))
             view.findViewById<TextView>(R.id.tv_member_since).text = dateStr
+
+            view.findViewById<TextView>(R.id.tv_profile_streak_count).text =
+                StreakManager.formatStreakCount(user.currentStreak)
+            view.findViewById<TextView>(R.id.tv_profile_streak_badge).text =
+                StreakManager.formatRankLabel(user.currentStreak)
+            view.findViewById<TextView>(R.id.tv_profile_longest_streak).text =
+                "Longest streak: ${user.longestStreak} day${if (user.longestStreak == 1) "" else "s"}"
         }
     }
 
