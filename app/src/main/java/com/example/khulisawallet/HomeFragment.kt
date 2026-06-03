@@ -1,6 +1,5 @@
 package com.example.khulisawallet
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -10,19 +9,32 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.cardview.widget.CardView
 import com.example.khulisawallet.data.AppDatabase
+import com.example.khulisawallet.data.Category
 import com.example.khulisawallet.data.CategoryRepository
+import com.example.khulisawallet.data.CategoryType
+import com.example.khulisawallet.data.Expense
 import com.example.khulisawallet.data.ExpenseRepository
+import com.example.khulisawallet.data.ExpenseWithCategory
 import com.example.khulisawallet.data.GoalRepository
+import com.example.khulisawallet.viewmodel.CategoryViewModel
+import com.example.khulisawallet.viewmodel.CategoryViewModelFactory
 import com.example.khulisawallet.viewmodel.ExpenseViewModel
 import com.example.khulisawallet.viewmodel.ExpenseViewModelFactory
 import com.example.khulisawallet.viewmodel.GoalViewModel
 import com.example.khulisawallet.viewmodel.GoalViewModelFactory
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.utils.ColorTemplate
 import java.text.SimpleDateFormat
 import java.util.*
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var expenseViewModel: ExpenseViewModel
+    private lateinit var categoryViewModel: CategoryViewModel
     private lateinit var goalViewModel: GoalViewModel
     private lateinit var expenseAdapter: ExpenseAdapter
 
@@ -42,6 +54,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             ExpenseViewModelFactory(ExpenseRepository(db.expenseDao(), db.goalDao()))
         )[ExpenseViewModel::class.java]
 
+        categoryViewModel = ViewModelProvider(
+            this,
+            CategoryViewModelFactory(CategoryRepository(db.categoryDao()))
+        )[CategoryViewModel::class.java]
+
         goalViewModel = ViewModelProvider(
             this,
             GoalViewModelFactory(
@@ -60,6 +77,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val dateStr = SimpleDateFormat("EEEE, dd MMM yyyy", Locale.getDefault()).format(Date())
         view.findViewById<TextView>(R.id.tv_date).text = dateStr
 
+        val pieChart = view.findViewById<PieChart>(R.id.spendingPieChart)
+        setupPieChart(pieChart)
+
+        var latestExpenses: List<ExpenseWithCategory> = emptyList()
+        var latestCategories: List<Category> = emptyList()
+
+        fun refreshChart() {
+            val expenseOnly = latestExpenses
+                .map { it.expense }
+                .filter { it.type == CategoryType.EXPENSE }
+            if (expenseOnly.isNotEmpty() && latestCategories.isNotEmpty()) {
+                updateChartData(pieChart, expenseOnly, latestCategories)
+            }
+        }
+
+        categoryViewModel.allCategories.observe(viewLifecycleOwner) { categories ->
+            latestCategories = categories
+            refreshChart()
+        }
+
         // --- RecyclerView Setup ---
         expenseAdapter = ExpenseAdapter()
         val rv = view.findViewById<RecyclerView>(R.id.rv_recent_expenses)
@@ -69,6 +106,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         // --- Observe Recent Expenses (last 5) ---
         val tvEmpty = view.findViewById<TextView>(R.id.tv_empty)
         expenseViewModel.allExpenses.observe(viewLifecycleOwner) { expenses ->
+            latestExpenses = expenses
+            refreshChart()
+
             val recent = expenses.take(5)
             expenseAdapter.submitList(recent)
             tvEmpty.visibility = if (expenses.isEmpty()) View.VISIBLE else View.GONE
@@ -119,5 +159,47 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 R.id.bottom_nav
             ).selectedItemId = R.id.navigation_history
         }
+    }
+
+    private fun setupPieChart(pieChart: PieChart) {
+        pieChart.setUsePercentValues(true)
+        pieChart.description.isEnabled = false
+        pieChart.setExtraOffsets(5f, 10f, 5f, 5f)
+        pieChart.dragDecelerationFrictionCoef = 0.95f
+        pieChart.isDrawHoleEnabled = true
+        pieChart.setHoleColor(android.graphics.Color.WHITE)
+        pieChart.setTransparentCircleRadius(61f)
+        pieChart.holeRadius = 58f
+        pieChart.centerText = "Spending"
+        pieChart.setCenterTextSize(20f)
+        pieChart.animateY(1400, Easing.EaseInOutQuad)
+    }
+
+    private fun updateChartData(
+        pieChart: PieChart,
+        expenses: List<Expense>,
+        categories: List<Category>
+    ) {
+        val entries = ArrayList<PieEntry>()
+
+        val spendingByCategory = expenses.groupBy { it.categoryId }
+            .mapValues { entry -> entry.value.sumOf { it.amount } }
+
+        spendingByCategory.forEach { (catId, total) ->
+            val categoryName = categories.find { it.id == catId }?.name ?: "Unknown"
+            entries.add(PieEntry(total.toFloat(), categoryName))
+        }
+
+        val dataSet = PieDataSet(entries, "Categories")
+        dataSet.sliceSpace = 3f
+        dataSet.selectionShift = 5f
+        dataSet.colors = ColorTemplate.MATERIAL_COLORS.toMutableList()
+
+        val data = PieData(dataSet)
+        data.setValueTextSize(12f)
+        data.setValueTextColor(android.graphics.Color.WHITE)
+
+        pieChart.data = data
+        pieChart.invalidate()
     }
 }
