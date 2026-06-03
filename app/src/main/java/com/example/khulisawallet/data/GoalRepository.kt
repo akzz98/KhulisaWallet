@@ -5,7 +5,8 @@ import androidx.lifecycle.LiveData
 class GoalRepository(
     private val goalDao: GoalDao,
     private val expenseDao: ExpenseDao,
-    private val categoryDao: CategoryDao
+    private val categoryDao: CategoryDao,
+    private val firebaseRepository: FirebaseRepository = FirebaseRepository()
 ) {
 
     fun getAllGoalsByUser(userId: Int): LiveData<List<Goal>> =
@@ -68,6 +69,8 @@ class GoalRepository(
     suspend fun insertGoal(goal: Goal): Result<Long> {
         return try {
             val id = goalDao.insertGoal(goal)
+            val savedGoal = goal.copy(id = id.toInt())
+            firebaseRepository.saveGoal(savedGoal)
             Result.success(id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -77,6 +80,7 @@ class GoalRepository(
     suspend fun updateGoal(goal: Goal): Result<Unit> {
         return try {
             goalDao.updateGoal(goal)
+            firebaseRepository.saveGoal(goal)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -86,6 +90,12 @@ class GoalRepository(
     suspend fun contributeToGoal(goalId: Int, amount: Double): Result<Unit> {
         return try {
             goalDao.contributeToGoal(goalId, amount)
+
+            val updatedGoal = goalDao.getGoalById(goalId)
+            if (updatedGoal != null) {
+                firebaseRepository.saveGoal(updatedGoal)
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -95,6 +105,12 @@ class GoalRepository(
     suspend fun updateGoalStatus(goalId: Int, status: GoalStatus): Result<Unit> {
         return try {
             goalDao.updateGoalStatus(goalId, status.name)
+
+            val updatedGoal = goalDao.getGoalById(goalId)
+            if (updatedGoal != null) {
+                firebaseRepository.saveGoal(updatedGoal)
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -104,6 +120,12 @@ class GoalRepository(
     suspend fun updateGoalThresholds(goalId: Int, minGoal: Double?, maxGoal: Double?): Result<Unit> {
         return try {
             goalDao.updateGoalThresholds(goalId, minGoal, maxGoal)
+
+            val updatedGoal = goalDao.getGoalById(goalId)
+            if (updatedGoal != null) {
+                firebaseRepository.saveGoal(updatedGoal)
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
