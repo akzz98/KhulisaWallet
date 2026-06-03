@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     //enable KSP
     alias(libs.plugins.ksp)
     id("com.google.gms.google-services")
@@ -33,13 +34,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     //Add view binding to project
     buildFeatures {
         viewBinding = true
+    }
+
+    kotlin {
+        jvmToolchain(21)
     }
 }
 
